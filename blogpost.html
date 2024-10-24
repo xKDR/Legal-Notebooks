@@ -2,15 +2,15 @@
 
 <h1>Evaluating Machine Learning and LLM approaches to estimate adjournment rates: an experiment in some Bombay courts</h1>
 
-
-<h3> Pavithra Manivannan<sup>1
-</sup> Ayush Patnaik <sup>1</sup>
-</sup> Bhargavi Zaveri Shah<sup>1</sup>
+<h3>
+Pavithra Manivannan
+Ayush Patnaik 
+Bhargavi Zaveri Shah
 </h3>
 </center>
 <center>
 <h3>
-1. XKDR Forum
+XKDR Forum
 </h3>
 </center>
 
@@ -19,23 +19,35 @@ We extend our thanks to Susan Thomas, Siddarth Raman, Samriddha Adhikary and Shr
 <h1> Abstract </h1>
 
 This study explores the use of natural language processing (NLP) to analyze court orders, comparing large language models (LLMs) with traditional machine learning (ML) techniques. We focus on classifying orders as either 'substantive' or 'non-substantive,' where substantive hearings advance case resolution by addressing key legal issues. This distinction is important for assessing court efficiency and tracking case progression. The problem is of binary classification, well-suited for NLP techniques.
-
+<br>
 Our models achieved 89% accuracy with ML and 84% with LLMs. While LLMs don't require labeled training data, ML models offer faster execution.
-
+<br>
 The methodology, fully reproducible in Google Colab, provides scalable NLP solutions for legal document analysis and court performance evaluation. We also release a dataset of 2,013 court orders for further research.
 
 <h1> 1 Introduction </h1>
 
 Estimating the rate of adjournments, by classifying court hearings as *substantive* or *non-substantive*, can help improve case scheduling by courts and provide more predictability to litigants. Substantive hearings contribute to resolving a case by addressing core legal issues, while non-substantive hearings involve adjournments and procedural directions.
-
+<br>
 Implementing a classification system for court hearings poses significant challenges due to the unstructured nature and language of court orders and lack of standardized documentation across jurisdictions. Manual efforts (Manivannan et al., 2023; Myers, 2015; Jauhar et al., 2016; Daksh, 2016) provide valuable insights, but are labor-intensive and not scalable. To get better, ongoing and more precise estimates of adjournment rates, a key challenge is to scale up this categorization across a wider number of cases, courts and types of cases.
-
+<br>
 In this article, we demonstrate the potential to scale up such classification using two different approaches that are commonly used in the field of computing to analyse textual data, machine learning models and large language models.
 Classifying hearings as 'substantive' or 'non-substantive' is a binary classification task well-suited to NLP. Machine learning models, like LightGBM, excel in such tasks by identifying textual patterns, offering an efficient and scalable solution. However, the nuanced legal language might vary between courts, potentially limiting a model's transferability. On the other hand, LLMs, with their broad knowledge base and ability to understand context, may offer a solution to this transferability challenge, potentially generalizing better across different legal jurisdictions and writing styles. There are other trade-offs to be made as well. For example, while LLMs do not require labeled training data—reducing costs and time associated with data generation—machine learning classifiers can be quicker in generating outputs based on the available training datasets.
-
+<br>
 Demonstrating the application of these two approaches gives us a sense of whether they work to read non-standardized documents such as court orders, their relative accuracy scores and the costs and benefits of using one over another. Reis et al. (2019) highlight AI's role in enhancing data interpretation and decision-making in public administration. Bansal et al. (2019) review deep learning applications in the legal domain, demonstrating how advanced technologies can streamline processes and improve efficiency. Nay (2018) shows how NLP can uncover patterns in unstructured legal texts that traditional methods might miss.
-
+<br>
 We explore classification using both LightGBM and LLMs, guided by predefined classification rules. We implement LightGBM and LLM classifiers to automate the categorization of court orders into substantive and non-substantive orders. The LightGBM classifier achieved 89% accuracy, while the LLM achieved 84% accuracy with longer processing time. We also release a dataset of 2,013 court orders to support future research in legal document analysis.
+
+<h1> 2 Cloud-based environment</h1> 
+
+Reproducibility in NLP research poses significant challenges due to the intricate interactions between preprocessing steps, model parameters, and external dependencies. Even minor variations in tokenization, data cleaning, or library versions can lead to inconsistent outcomes, complicating efforts to replicate results across different experiments. Computational notebooks can assist in addressing these issues by providing a structured environment for documenting and executing code, making them especially helpful for lawyers and individuals less familiar with programming. These notebooks allow users to present code alongside descriptive text, equations, visualizations, and tables in a single document (Rowe et al., 2020), thus enhancing the reproducibility and transparency of scientific research.
+
+Despite the advances offered by computational notebooks, a significant challenge persists in the reproducibility of the computational environment, which is essential for generating consistent results. A notebook user still needs to download, install, and manage numerous computational libraries and their dependencies.
+<br> 
+Cloud-based environments such as <a href="https://colab.research.google.com/">Google Colab</a>, <a href="https://anaconda.cloud/">Anaconda Cloud</a> or <a href="https://deepnote.com/">Deepnote</a> offer solutions to the reproducible-environment problem. They operate on cloud computers that can be reproduced with a single click, and Google Colab even offers free GPU compute units, which can be particularly beneficial for running LLMs that require significant computational resources. To process court orders in a fully reproducible cloud-based environment, we host our notebook on Google Colab.
+<br> 
+This cloud-based environment can be easily duplicated, run, and extended after logging in with a Google account. Furthermore, when operating in the cloud, the “forms” feature of Google Colab’s code cells facilitates the display, folding, and parameterization of code.
+<br> 
+At its minimum, this environment requires the libraries shown in Table 1. The results were produced using Python 3.10.12. To start, we install the required Python libraries that are not pre-installed in Google Colab.
 
 <table>
   <tr>
@@ -116,3 +128,453 @@ We explore classification using both LightGBM and LLMs, guided by predefined cla
 </table>
 
 <b> Table 1: </b> List of libraries used in the project
+
+<h1> 3 Data </h1>
+
+Our datasets contain the PDFs of the orders passed in the cases, with each order having been manually classified into substantive or non-substantive. We use this manually annotated data-set for both training the LightGBM model, testing it and groundtruthing the results obtained on applying the ML model and the LLM. For implementing the LightGBM model, we train it on 80% of this data-set and test it on the remaining 20%. The LLM, as mentioned earlier, did not need training data. We compare the results obtained from implementing these models on this data-set with the manually classified labels.
+
+<h2> 3.1 Orders PDFs </h2>
+
+Our dataset, developed by Manivannan et al. (2023), comprises 600 cases (2, 013 orders) from three judicial bodies in Mumbai:
+
+<ol> 
+
+<l1> <a href="https://bombayhighcourt.nic.in/index.php"> Bombay High Court (BHC) </a>: 341 orders of Suits and commercial suits </l1>
+<l1> <a href="https://nclt.gov.in/order-date-wise"> National Company Law Tribunal (NCLT) </a>: 1129 orders from the Mumbai bench</l1>
+<l1> 
+<a href="https://drt.gov.in/#/order"> Recovery Tribunal (DRT) </a>: 543 orders from the Mumbai bench cases
+</l1>
+</ol>
+
+The dataset spans from 2018 to 2022, with case lifecycle information sourced from the respective court websites. The sample is evenly distributed, with 200 cases from each court (100 disposed and 100 pending). The download process is explained in Appendix B.
+
+<h2> 3.2 Classification labels </h2>
+
+Each order passed in a case was classified as either substantive or non-substantive, following the manual outlined in Table 2. To ensure accuracy, the classification underwent a double-blind peer review by different set of legal researchers.
+<br>
+The following steps outline the process for classifying hearings as substantive or non-substantive based on the order text.
+<br>
+<p><b>Step 1:</b> Each order was classified into one of the five categories, described in Table 2, based on some keywords used in the order text. The first row of Table 2 shows the categories and the rows below each category list the keywords used to classify an order under that category.</p>
+
+<p><b>Step 2:</b> The next step was to classify the order as substantive or non-substantive based on the following logic:</p>
+<ul>
+  <li>Substantive: If the hearing falls under Disposed, For Orders, or Miscellaneous. </li>
+<li>Non-Substantive: If the hearing falls under Adjourned or Procedure.</li></ul>
+
+<table>
+<tr>
+<th colspan="2">Non-substantive</th>
+<th colspan="3">Substantive</th>
+</tr>
+<tr>
+  <th> Adjourned </th>
+  <th> Procedure </th>
+  <th>Disposed </th>
+  <th> For Orders </th>
+  <th> Miscellaneous </th>
+</tr>
+
+<tr>
+  <td> Date	</td>
+  <td> Direction Issued	</td>
+    <td> Dismissed	</td>
+      <td> Reserved for orders	</td>
+        <td> Part-heard</td>
+</tr>
+
+<tr>
+  <td> Not on board </td>
+    <td> Clarified </td>
+      <td>Disposed	</td>
+      <td>Corrigendum order </td>
+      <td>Dereserved</td>
+</tr>
+  <tr>
+    <td>List for hearing</td>
+    <td>Repeated</td>
+    <td>Admitted</td>
+    <td>Order pronounced</td>
+    <td>Awaiting NCLT Orders </td>
+  </tr>
+  <tr>
+    <td>List for admission</td>
+    <td>Taken on record </td>
+    <td>Allowed</td>
+    <td>CRP initiated</td>
+    <td>Appearance </td>
+  </tr>
+  <tr>
+    <td>List for further consideration</td>
+    <td>Amendment </td>
+    <td>IRP Appointed</td>
+    <td>Correction of order</td>
+    <td>To be filed before IRP </td>
+  </tr>
+  <tr>
+    <td>Listed for order</td>
+    <td>No further adjournment</td>
+    <td>Withdrawn</td>
+    <td>Rectification of order</td>
+    <td>Condoned </td>
+  </tr>
+  <tr>
+    <td>Deferred</td>
+    <td>Already heard/disposed</td>
+    <td>Transfer</td>
+    <td>Clarified order</td>
+    <td>Recused </td>
+  </tr>
+  <tr>
+    <td>Passover</td>
+    <td>Filed</td>
+    <td>Scheme sanctioned</td>
+    <td> </td>
+    <td>Returned to registry</td>
+  </tr>
+  <tr>
+    <td>Non-appearance of parties</td>
+    <td>Directed</td>
+    <td>Resolution plan approved</td>
+    <td> </td>
+    <td>Compounding </td>
+  </tr>
+  <tr>
+    <td>Technical glitch</td>
+    <td> </td>
+    <td>Rejected</td>
+    <td> </td>
+    <td>Continued arguments</td>
+  </tr>
+  <tr>
+    <td>Paucity of time</td>
+    <td> </td>
+    <td>Dissolved</td>
+    <td> </td>
+    <td>Concluded arguments</td>
+  </tr>
+  <tr>
+    <td>Stand-over</td>
+    <td> </td>
+    <td>Settled</td>
+    <td> </td>
+    <td>Heard</td>
+  </tr>
+  <tr>
+    <td>Seeks time</td>
+    <td> </td>
+    <td>Approved</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>Time for filing reply</td>
+    <td> </td>
+    <td>Consent terms</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>Time for filing rejoinder</td>
+    <td> </td>
+    <td>Settlement</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>List for arguments</td>
+    <td> </td>
+    <td>Infructuous</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>Adjourn</td>
+    <td> </td>
+    <td>Closed</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td>Adjournment</td>
+    <td> </td>
+    <td>Liquidation</td>
+    <td> </td>
+    <td> </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> </td>
+    <td>Liquidated</td>
+    <td> </td>
+    <td></td>
+  </tr>
+
+
+</table>
+
+<b> Table 2: </b> Categorization of orders.  
+
+<h2> 3.3 Examples of classification </h2>
+
+Three examples each of substantive and non-substantive hearings are provided below. For clarity, only the core order text from the PDF is shown (in italics).
+
+ <h3>3.3.1 Example 1 </h3>
+  <i> The matter is taken up through Virtual Hearing (VC). Heard the arguments and Reserved for Orders.</i>
+  <br>
+  <b> Classification: </b> Substantive
+  <br>
+  <b> Reason:</b> The phrases "Heard" under the <b>Misc</b> category and "Reserved for Orders" under the <b>For Orders</b> category, indicate progress in the resolution of the case, and is considered substantive.
+
+<h3> 3.3.2 Example 2 </h3>
+<i> The matter is taken up through Virtual Hearing (VC). The present application is filed by the Applicant/RP. Counsel for the applicant RP seeks liberty to withdraw the application and file afresh. With the above observation IA.No.3834/2022 is disposed of as withdrawn. </i>
+<br>
+
+<b> Classification: </b> Substantive
+<br>
+<b> Reason:</b> The phrase "disposed of as withdrawn" falls under the **Disposed** category, which is classified as substantive.
+
+<h3> 3.3.3 Example 3 </h3>
+
+<i> The matter is taken up through Virtual Hearing (VC). Counsel, Ms. Savita Nangare appeared for the Liquidator. Counsel, Ms. Maya Majumdar appeared for the Respondent No.1. Counsel, Mr. Amar Mishra appeared for Respondent No. 2 GST Dept. Counsel appearing for the Liquidator handed over the progress report in the court today. However, the said report is delayed in filing. Be that as it may, delay if any is condoned and the progress report of the liquidator is taken on record. In the said report the liquidator has stated that a valuer has been appointed for getting a fresh valuation of the land of the company (in liquidation) situated at Survey No. 155(152)1+4/7, adm. H0-R54-P0 and bearing Survey No. 155 (152) 1+4/5, adm. H2-R80-P0 situate, lying and being at village Sinnar, Tal.Sinnar & Dist. Nashik, in the Registration Sub-District Sinnar, Dist. Nashik. The Counsel appearing for the liquidator further submits that the valuation of the above said property will be done within a weeks’ time. The Counsel appearing for the liquidator is directed to serve a copy of the progress report to the counsel appearing for the GST Dept. State Maharashtra and other counsel appearing for the Respondent. List the matter on 08.11.2021 for hearing. </i>
+   <br>
+<b> Classification: </b> Substantive
+<br>
+<b> Reason:</b>  The phrase "condoned and the progress report of the liquidator is taken on record" aligns with the **Misc** category, which includes terms like "taken on record." Thus, it is considered substantive.
+
+<h3> 3.3.4 Example 4 </h3>
+
+<i>The matter is taken up through Virtual Hearing (VC). Counsel appearing for the Financial Creditor is directed to submit hard copy of the Company Petition on record within a period of two weeks. List the matter on 01.03.2022 for hearing. </i>
+<br> 
+<b> Classification: </b> Non-substantive
+<br>
+<b> Reason:</b>  The phrase "directed to submit" indicates a procedural direction by the court, and falls under the **Procedure** category. This is considered non-substantive.
+
+<h3> 3.3.5 Example 5 </h3>
+
+<i> Court is convened through Virtual Hearing (VC). Due to technical glitch the matter could not be taken up. Consequently, the matter is adjourned to 03.08.2022.*
+</i>
+<br> 
+<b> Classification: </b> Non-substantive
+<br>
+<b> Reason:</b>  The phrase "technical glitch" and "adjourned" fall under the **Adjourned** category, which is classified as non-substantive.
+
+<h3> 3.3.6 Example 6 </h3>
+
+<i> The Court is convened through Virtual Hearing (VC). The matter could not be taken up due to paucity of time. List the matter on 23.09.2022 for hearing. </i>
+
+<br> 
+<b> Classification: </b> Non-substantive
+<br>
+<b> Reason:</b>  The phrase "paucity of time" aligns with the **Adjourned** category, and therefore, this is classified as non-substantive.
+
+<h1> 4 Methodology </h1>
+
+<h2> 4.1 Machine learning based classifcation </h2>
+
+Classifiers in machine learning are models used to categorize data into distinct classes. For example, an email spam classifier sorts emails into two categories: spam or not spam. The classifier is trained using supervised learning, where the training data consists of emails labeled with these categories. Based on features like the sender’s address, subject line, and text content, it learns patterns that differentiate spam from legitimate emails. Once trained, the model can predict whether a new email is spam or not.
+<br>
+The task of classifying court orders as substantive or non-substantive hearings can similarly be turned into a classification problem. We train the model to treat each court order as a data point and define two possible classes: substantive or non-substantive. Features such as the language used in the order, keywords (like "adjourned" or "disposed"), and the outcome of the hearing are extracted. A machine learning model, trained using supervised learning with a dataset of labeled court orders, can then learn to recognize patterns in the text. Once trained, the model can classify new court hearings into either category based on these patterns.
+<br>
+This binary classification problem follows the same logic as spam classification but is applied to legal documents, where the goal is to predict whether a court order advances the resolution of a case.
+<br>
+In this classification task, we use LightGBM (Ke et al., 2017), a gradient boosting framework that efficiently handles large datasets and high-dimensional features. LightGBM builds decision trees iteratively to improve predictions, making it well-suited for text-based classification. By training on labeled court orders, it learns patterns to predict whether a new order is substantive or non-substantive. In Appendix A, we also explore Multinomial Naive Bayes and Logistic Regression as alternative classification models.
+<br>
+<h2> 4.2 Classification using LLMs </h2>
+
+A major advantage of using LLMs for this task is that they eliminate the need for labeled training data, which is often expensive and time-consuming to produce. Instead of relying on manually annotated datasets, the model leverages its pre-trained knowledge to analyze the text of court orders directly. It classifies orders by recognizing patterns and structures learned from extensive training on large text corpora.
+<br>
+In this unsupervised approach, the LLM identifies relevant features and characteristics of the text without predefined labels. We provide the LLM with instructions similar to the guidelines given to a law intern for making the classification. The model uses its contextual understanding and semantic insights to determine whether a court order is substantive or non-substantive, enabling effective classification without manual labeling.
+<br>
+We install and use Ollama, an open-source tool that facilitates working with LLMs locally. Ollama offers an easy-to-use interface for managing models, enabling deployment on local machines without requiring cloud-based solutions. Running LLMs locally, like the 27-billion-parameter Gemma 2 model by Google, provides flexibility and control. Other similar models can also be used in this setup.
+<br>
+Language model APIs by <a href="https://platform.openai.com/"> OpenAI</a>, <a href="https://groq.com/"> can also be used instead of an LLM running locally. </a> 
+
+<h1> 5 Results </h1>
+
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0.0</td>
+      <td>0.91</td>
+      <td>0.87</td>
+      <td>0.89</td>
+      <td>136</td>
+    </tr>
+    <tr>
+      <td>1.0</td>
+      <td>0.87</td>
+      <td>0.92</td>
+      <td>0.89</td>
+      <td>132</td>
+    </tr>
+    <tr>
+      <td colspan="5"></td>
+    </tr>
+    <tr>
+      <td>accuracy</td>
+      <td colspan="4">0.89 (268)</td>
+    </tr>
+    <tr>
+      <td>macro avg</td>
+      <td>0.89</td>
+      <td>0.89</td>
+      <td>0.89</td>
+      <td>268</td>
+    </tr>
+    <tr>
+      <td>weighted avg</td>
+      <td>0.89</td>
+      <td>0.89</td>
+      <td>0.89</td>
+      <td>268</td>
+    </tr>
+  </tbody>
+</table>
+
+<b> Table 5:</b> Classification report of LightGBM model's predictions.
+
+<b>Class-wise Breakdown:</b>
+<ol>
+<li>
+  <strong>Non-substantive orders:</strong>
+  <ul>
+    <li><strong>Precision:</strong> 0.91 &mdash; Out of all instances predicted as non-substantive, 91% were actually non-substantive.</li>
+    <li><strong>Recall:</strong> 0.87 &mdash; The model correctly identified 87% of all actual non-substantive orders.</li>
+    <li><strong>F1-Score:</strong> 0.89 &mdash; The harmonic mean of precision and recall, indicating a balance between them.</li>
+    <li><strong>Support:</strong> 136 &mdash; There were 136 actual non-substantive orders in the test dataset.</li>
+  </ul>
+</li>
+<li>
+  <strong>Substantive orders:</strong>
+  <ul>
+    <li><strong>Precision:</strong> 0.87 &mdash; Out of all instances predicted as substantive, 87% were actually substantive.</li>
+    <li><strong>Recall:</strong> 0.92 &mdash; The model correctly identified 92% of all actual substantive orders.</li>
+    <li><strong>F1-Score:</strong> 0.89 &mdash; This indicates the balance between precision and recall for substantive orders.</li>
+    <li><strong>Support:</strong> 132 &mdash; There were 132 actual substantive orders in the test dataset.</li>
+  </ul>
+</li>
+</ol>
+  <p>The model performs well for both substantive and non-substantive classifications. The balance between precision and recall for both classes (with an F1-score of 0.89) suggests the model is equally effective at minimizing false positives and false negatives. The slight difference in precision and recall between the classes indicates that the model is slightly more conservative when predicting substantive orders, but it correctly identifies a higher proportion of them. This classification report indicates robust performance across both categories.</p>
+
+
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0.0</td>
+      <td>0.80</td>
+      <td>0.90</td>
+      <td>0.85</td>
+      <td>136</td>
+    </tr>
+    <tr>
+      <td>1.0</td>
+      <td>0.89</td>
+      <td>0.77</td>
+      <td>0.82</td>
+      <td>132</td>
+    </tr>
+    <tr>
+      <td colspan="5"></td>
+    </tr>
+    <tr>
+      <td>accuracy</td>
+      <td colspan="4">0.84 (268)</td>
+    </tr>
+    <tr>
+      <td>macro avg</td>
+      <td>0.84</td>
+      <td>0.83</td>
+      <td>0.83</td>
+      <td>268</td>
+    </tr>
+    <tr>
+      <td>weighted avg</td>
+      <td>0.84</td>
+      <td>0.84</td>
+      <td>0.83</td>
+      <td>268</td>
+    </tr>
+  </tbody>
+</table>
+
+<b> Table 6: </b> Classification report of LLM's predictions.
+
+The model achieves an overall accuracy of 84%, meaning it made correct predictions for 84% of the instances in the test dataset, including both substantive and non-substantive orders.
+
+<b>Class-wise Breakdown: </b>
+
+<ol> <li> <b> Non-substantive orders: </b> <ul> <li> <b> Precision: </b> 0.80 — Of all instances predicted as non-substantive, 80% were actually non-substantive. </li> <li> <b> Recall: </b> 0.90 — The model correctly identified 90% of all actual non-substantive orders. </li> <li> <b> F1-Score:</b> 0.85 — Represents the balance between precision and recall for non-substantive orders. </li> <li> <b> Support:</b> 136 — There were 136 actual non-substantive orders in the test dataset. </li> </ul> </li> <li> <b> Substantive orders: </b> <ul> <li> <b> Precision: </b> 0.89 — Of all instances predicted as substantive, 89% were actually substantive. </li> <li> <b> Recall: </b> 0.77 — The model identified only 77% of all actual substantive orders, indicating a tendency to miss some substantive orders. </li> <li> <b> F1-Score:</b> 0.82 — Reflects the balance between precision and recall for substantive orders. </li> <li> <b> Support:</b> 132 — There were 132 actual substantive orders in the test dataset. </li> </ul> </li> </ol>
+
+<b>Discrepancy in Recall: </b>
+
+There is a noticeable discrepancy in the recall values between the two classes. The value for non-substantive orders (0.90) is higher than that for substantive orders (0.77), meaning the model is better at identifying non-substantive orders. This discrepancy suggests that the model misses more substantive orders, potentially leading to an imbalance in classification.
+<br>
+Secondly, the LLM took about 9 minutes to label 268 orders. The LLM’s slower performance, despite its flexibility, makes it less suited for large-scale applications.
+
+<h1> 6 Discussion</h1>
+  
+This study demonstrates the feasibility and potential of using machine learning and large language models to parse and automate the classification of court orders as substantive or non-substantive. Our results show that both approaches can achieve good performance, with each offering distinct advantages.
+<br> 
+
+The LightGBM classifier achieved an overall accuracy of 89%, with balanced precision and recall for both classes. This traditional machine learning technique, when applied to carefully preprocessed text data, not only effectively distinguishes between substantive and non-substantive court orders but does so with remarkable speed. The ability to process large volumes of data quickly makes this approach particularly suitable for large-scale applications.
+<br> 
+The large language model (Gemma 2B) approach, while slightly less accurate at 84%, offers unique benefits. It performed reasonably well without requiring specific training data, relying instead on its general language understanding capabilities and a set of provided rules. This characteristic makes it potentially applicable to orders from other courts or jurisdictions without the need for extensive data collection and labeling efforts. However, the LLM-based classification is significantly slower compared to the ML approach, which could limit its practicality for large-scale, time-sensitive applications.
+<br> 
+The speed difference between these approaches presents an important trade-off. The ML model's fast processing makes it ideal for analyzing large datasets of court orders, enabling rapid analysis at a scale that would be infeasible with manual classification. Conversely, while slower, the LLM approach offers greater flexibility and potential transferability across different legal contexts without retraining.
+<br> 
+As LLM technology continues to advance rapidly, we can reasonably expect improvements in both the accuracy and speed of LLM-based classifications. Future developments may narrow the performance gap with traditional ML approaches, potentially offering a more balanced combination of speed, accuracy, and adaptability.
+<br> 
+In conclusion, our study demonstrates one application, the binary categorisation of hearings, to illustrate the importance of using data-science techniques in the broader field of legal systems research. Such models can be deployed for other non-binary classifications, such as nature of disposal types or stage-classification of hearings. By automating the classification of court orders, we can enhance the ability to analyze court performance and predict case trajectories. The choice between ML and LLM approaches - or a combination of both - will depend on the specific requirements of the application, balancing the need for speed, accuracy, and adaptability to improve the efficiency and transparency of legal systems across various jurisdictions.
+<br> 
+Importantly, to ensure the accessibility and reproducibility of our work, we have made our complete analysis available through a notebook hosted on Google Colab. This cloud-based environment allows other researchers, legal professionals, and interested parties to easily access, run, and extend our analysis without the need for complex local setups. By sharing our methodology in this accessible format, we aim to encourage further exploration and advancement in the application of data science to legal research, fostering collaboration and innovation in this important field.
+
+<h1>References</h1>
+<ol>
+    <li>Rowe, F., Maier, G., Arribas-Bel, D., & Rey, S. J. (2020). The potential of notebooks for scientific publication: Reproducibility, and dissemination. <i>REGION, 7</i>(3), 357. <a href="https://doi.org/10.18335/region.v7i3.357">https://doi.org/10.18335/region.v7i3.357</a></li>
+    <li>Manivannan, P., Suresh, K., Thomas, S., & Zaveri-Shah, B. (2023). How substantial are non-substantive hearings in Indian courts: some estimates from Bombay. The Leap Blog. <a href="https://blog.theleapjournal.org/2023/12/how-substantial-are-non-substantive.html#gsc.tab=0">https://blog.theleapjournal.org/2023/12/how-substantial-are-non-substantive.html#gsc.tab=0</a></li>
+    <li>Jauhar A., Khaitan, N., Kumar, A.P, & Rahman, F. (2016). Towards an Efficient and Effective Supreme Court. Vidhi Centre for Legal Policy. <a href="https://vidhilegalpolicy.in/wp-content/uploads/2019/05/TowardsanEffectiveandEfficientSupremeCourt.pdf">https://vidhilegalpolicy.in/wp-content/uploads/2019/05/TowardsanEffectiveandEfficientSupremeCourt.pdf</a></li>
+    <li>Myers, N.M. (2015). Who Said Anything About Justice? Bail Court and the Culture of Adjournment. <i>Canadian Journal of Law and Society</i>, 30(01), 127-146. <a href="https://www.cambridge.org/core/journals/canadian-journal-of-law-and-society-la-revue-canadienne-droit-et-societe/article/abs/who-said-anything-about-justice-bail-court-and-the-culture-of-adjournment/2CFD0E35E5EAB0940CACB8335E113A17">https://www.cambridge.org/core/journals/canadian-journal-of-law-and-society-la-revue-canadienne-droit-et-societe/article/abs/who-said-anything-about-justice-bail-court-and-the-culture-of-adjournment/2CFD0E35E5EAB0940CACB8335E113A17</a></li>
+    <li>Daksh (2016). Time and Motion Study of four District and Sessions Courts. <a href="https://www.dakshindia.org/wp-content/uploads/2019/11/DAKSH-TIME-AND-MOTION-STUDY-OF-FOUR-DISTRICT-AND-SESSIONS-COURTS-3.pdf">https://www.dakshindia.org/wp-content/uploads/2019/11/DAKSH-TIME-AND-MOTION-STUDY-OF-FOUR-DISTRICT-AND-SESSIONS-COURTS-3.pdf</a></li>
+    <li>Reis, J., Santo, P. E., & Melão, N. (2019). Impacts of artificial intelligence on public administration: A systematic literature review. In Proceedings of the 2019 14th Iberian Conference on Information Systems and Technologies (CISTI) (pp. 1–7). Coimbra, Portugal: IEEE. <a href="https://doi.org/10.1109/CISTI.2019.8760836">https://doi.org/10.1109/CISTI.2019.8760836</a></li>
+    <li>Bansal, N., Sharma, A., & Singh, R. (2019). A review on the application of deep learning in legal domain. In IFIP International Conference on Artificial Intelligence Applications and Innovations (pp. 374–381). Hersonissos, Crete, Greece: Springer. <a href="https://doi.org/10.1007/978-3-030-19823-7_32">https://doi.org/10.1007/978-3-030-19823-7_32</a></li>
+    <li>Nay, J. (2018). Natural Language Processing and Machine Learning for law and policy texts. Retrieved from <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3438276">https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3438276</a></li>
+    <li>Östling, Andreas, Holli Sargeant, Huiyuan Xie, Ludwig Bull, Alexander Terenin, Leif Jonsson, Måns Magnusson, and Felix Steffek. (2023). The Cambridge Law Corpus: A Dataset for Legal AI Research. Advances in Neural Information Processing Systems 36:41355–85.</li>
+    <li>Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., ... & Liu, T. Y. (2017). <a href="https://proceedings.neurips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html">Lightgbm: A highly efficient gradient boosting decision tree. Advances in neural information processing systems, 30.</a></li>
+</ol>
+
+<h1> Appendix</h1>
+
+<h2> A. Evaluating other ML models. </h2>
+
+We have also tested other machine learning models, specifically Multinomial Naive Bayes and Logistic Regression, to classify court orders into substantive and non-substantive categories.
+
+<h3> A.1 Naive Bayes </h3>
+
+This model is a probabilistic classifier based on Bayes' theorem, commonly used for text classification. It assumes that word occurrences follow a multinomial distribution, which makes it effective for high-dimensional data like documents or emails. Naive Bayes works by calculating the probability of each class (substantive or non-substantive) given the input features (words in the text).
+
+The model achieved an accuracy of 74%. It had a precision of 0.76 for non-substantive orders and 0.72 for substantive orders, while recall values were 0.71 and 0.77, respectively. The relatively lower precision and recall indicate that the model struggles to distinguish between the two classes accurately, misclassifying some substantive orders as non-substantive and vice versa. The balanced f1-score of 0.74 reflects this difficulty in classification performance.
+
+<h3> A.2 Logistic regression </h3>
+
+This linear model predicts the probability of a data point belonging to a particular class by fitting a linear decision boundary. Logistic regression is popular for binary classification problems because of its simplicity and effectiveness, especially when relationships between features and outcomes are linear. It calculates the likelihood of an order being substantive or non-substantive based on the input text features and thresholds the result to predict one of the two classes.
+
+Logistic Regression achieved a higher accuracy of 78%. It had better precision for non-substantive orders (0.83) and substantive orders (0.73), but the recall was less balanced, with 0.76 for non-substantive and 0.86 for substantive. This suggests that Logistic Regression was able to classify non-substantive orders more precisely but had a tendency to predict substantive orders less accurately, missing some of them. The overall f1-score was 0.78, reflecting a more consistent performance compared to Naive Bayes, but still indicating room for improvement.
+
