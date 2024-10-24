@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<h1>Evaluating Machine Learning and LLM approaches to estimate adjournment rates: an experiment in some Bombay courts</h1>
+
+
+<h3> Pavithra Manivannan<sup>1
+</sup> Ayush Patnaik <sup>1</sup>
+</sup> Bhargavi Zaveri Shah<sup>1</sup>
+</h3>
+</center>
+<center>
+<h3>
+1. XKDR Forum
+</h3>
+</center>
+
+We extend our thanks to Susan Thomas, Siddarth Raman, Samriddha Adhikary and Shreyan Chakraborty for their valuable contributions
+
+<h1> Abstract </h1>
+
+This study explores the use of natural language processing (NLP) to analyze court orders, comparing large language models (LLMs) with traditional machine learning (ML) techniques. We focus on classifying orders as either 'substantive' or 'non-substantive,' where substantive hearings advance case resolution by addressing key legal issues. This distinction is important for assessing court efficiency and tracking case progression. The problem is of binary classification, well-suited for NLP techniques.
+
+Our models achieved 89% accuracy with ML and 84% with LLMs. While LLMs don't require labeled training data, ML models offer faster execution.
+
+The methodology, fully reproducible in Google Colab, provides scalable NLP solutions for legal document analysis and court performance evaluation. We also release a dataset of 2,013 court orders for further research.
+
+<h1> 1 Introduction </h1>
+
+Estimating the rate of adjournments, by classifying court hearings as *substantive* or *non-substantive*, can help improve case scheduling by courts and provide more predictability to litigants. Substantive hearings contribute to resolving a case by addressing core legal issues, while non-substantive hearings involve adjournments and procedural directions.
+
+Implementing a classification system for court hearings poses significant challenges due to the unstructured nature and language of court orders and lack of standardized documentation across jurisdictions. Manual efforts (Manivannan et al., 2023; Myers, 2015; Jauhar et al., 2016; Daksh, 2016) provide valuable insights, but are labor-intensive and not scalable. To get better, ongoing and more precise estimates of adjournment rates, a key challenge is to scale up this categorization across a wider number of cases, courts and types of cases.
+
+In this article, we demonstrate the potential to scale up such classification using two different approaches that are commonly used in the field of computing to analyse textual data, machine learning models and large language models.
+Classifying hearings as 'substantive' or 'non-substantive' is a binary classification task well-suited to NLP. Machine learning models, like LightGBM, excel in such tasks by identifying textual patterns, offering an efficient and scalable solution. However, the nuanced legal language might vary between courts, potentially limiting a model's transferability. On the other hand, LLMs, with their broad knowledge base and ability to understand context, may offer a solution to this transferability challenge, potentially generalizing better across different legal jurisdictions and writing styles. There are other trade-offs to be made as well. For example, while LLMs do not require labeled training data—reducing costs and time associated with data generation—machine learning classifiers can be quicker in generating outputs based on the available training datasets.
+
+Demonstrating the application of these two approaches gives us a sense of whether they work to read non-standardized documents such as court orders, their relative accuracy scores and the costs and benefits of using one over another. Reis et al. (2019) highlight AI's role in enhancing data interpretation and decision-making in public administration. Bansal et al. (2019) review deep learning applications in the legal domain, demonstrating how advanced technologies can streamline processes and improve efficiency. Nay (2018) shows how NLP can uncover patterns in unstructured legal texts that traditional methods might miss.
+
+We explore classification using both LightGBM and LLMs, guided by predefined classification rules. We implement LightGBM and LLM classifiers to automate the categorization of court orders into substantive and non-substantive orders. The LightGBM classifier achieved 89% accuracy, while the LLM achieved 84% accuracy with longer processing time. We also release a dataset of 2,013 court orders to support future research in legal document analysis.
+
+<table>
+  <tr>
+    <th>Package</th>
+    <th>Version</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>langchain</td>
+    <td>0.3</td>
+    <td>Library for building and using language models</td>
+  </tr>
+  <tr>
+    <td>langchain-core</td>
+    <td>0.3</td>
+    <td>Core components of the Langchain library</td>
+  </tr>
+  <tr>
+    <td>langchain-community</td>
+    <td>0.3</td>
+    <td>Community-contributed modules for Langchain</td>
+  </tr>
+  <tr>
+    <td>sqlite3</td>
+    <td>2.6</td>
+    <td>Library for interfacing with an SQLite database engine</td>
+  </tr>
+  <tr>
+    <td>pdfplumber</td>
+    <td>0.11</td>
+    <td>Library for extracting text from PDFs</td>
+  </tr>
+  <tr>
+    <td>pytesseract</td>
+    <td>0.3</td>
+    <td>Wrapper for Tesseract OCR</td>
+  </tr>
+  <tr>
+    <td>pdf2image</td>
+    <td>1.17</td>
+    <td>Library for converting PDF files to images</td>
+  </tr>
+  <tr>
+    <td>scikit-learn</td>
+    <td>1.5</td>
+    <td>Machine learning library</td>
+  </tr>
+  <tr>
+    <td>nltk</td>
+    <td>3.8</td>
+    <td>A natural language toolkit</td>
+  </tr>
+  <tr>
+    <td>lightgbm</td>
+    <td>4.5</td>
+    <td>A gradient boosting framework for machine learning</td>
+  </tr>
+  <tr>
+    <td>tqdm</td>
+    <td>4.66</td>
+    <td>Library to show a progress bar</td>
+  </tr>
+  <tr>
+    <td>pandas</td>
+    <td>2.1</td>
+    <td>Library for handling DataFrames</td>
+  </tr>
+  <tr>
+    <td>pillow</td>
+    <td>10.4</td>
+    <td>A Python imaging library</td>
+  </tr>
+  <tr>
+    <td>matplotlib</td>
+    <td>3.7</td>
+    <td>A Python plotting library</td>
+  </tr>
+</table>
+
+<b> Table 1: </b> List of libraries used in the project
